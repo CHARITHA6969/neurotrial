@@ -74,3 +74,28 @@ def test_chunking_normalizes_whitespace():
     chunks = split_into_chunks("Trial\n\nresults   showed improvement.")
     assert len(chunks) == 1
     assert chunks[0] == "Trial results showed improvement."
+
+
+
+def test_ask_rejects_citations_that_do_not_map_to_retrieved_sources(monkeypatch):
+    from app import main
+
+    monkeypatch.setattr(main, "_provider_text", lambda prompt: "Unsupported claim [S99].")
+    upload = client.post(
+        "/api/v1/documents",
+        files={
+            "file": (
+                "citation-validation-source.txt",
+                b"The placebo arm recorded a biomarker endpoint at week 18.",
+                "text/plain",
+            )
+        },
+    )
+    assert upload.status_code == 200
+
+    response = client.post(
+        "/api/v1/ask",
+        json={"question": "Which biomarker endpoint was recorded?"},
+    )
+    assert response.status_code == 502
+    assert "citation" in response.json()["detail"].lower()
