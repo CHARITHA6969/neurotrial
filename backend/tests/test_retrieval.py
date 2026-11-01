@@ -1,6 +1,17 @@
 from types import SimpleNamespace
 
-from app.documents import _tokenize, retrieve_chunks, split_into_chunks
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
+
+from app.documents import (
+    Base,
+    DocumentChunk,
+    SourceDocument,
+    _tokenize,
+    retrieve_chunks,
+    split_into_chunks,
+)
 
 
 class FakeResult:
