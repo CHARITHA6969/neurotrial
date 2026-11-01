@@ -78,7 +78,7 @@ _STOP_WORDS = {
     "during", "each", "few", "for", "from", "further", "had", "has", "have", "having",
     "her", "here", "hers", "him", "his", "how", "into", "its", "itself", "just", "more",
     "most", "must", "not", "now", "off", "once", "only", "other", "our", "out", "over",
-    "same", "she", "should", "some", "such", "than", "that", "their", "theirs", "them",
+    "same", "she", "should", "some", "such", "than", "that", "the", "their", "theirs", "them",
     "then", "there", "these", "they", "this", "those", "through", "too", "under", "until",
     "very", "was", "were", "what", "when", "where", "which", "while", "who", "whom",
     "why", "will", "with", "would", "you", "your",
