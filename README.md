@@ -32,19 +32,21 @@ The interface is organized into reusable React components and separate analysis 
 flowchart TD
     A[Researcher] --> B[React application]
     B --> C[Trial workspace]
-    C --> D[Parse]
-    C --> E[Compare]
-    C --> F[Failure analysis]
-    C --> G[Hypothesis exploration]
-    C --> H[Add trial]
-    C --> I[Bundled sample trial data]
-    D --> J[React API client]
-    E --> J
-    F --> J
-    G --> J
-    J --> L[FastAPI gateway]
-    L --> M[Server-side Anthropic key]
-    L --> K[Structured model response]
+    C --> D[Parse / Compare / Hypotheses]
+    D --> E[React API client]
+    B --> F[Source Library UI]
+    F --> G[FastAPI document API]
+    G --> H[PDF and text extraction]
+    H --> I[Chunking and SHA-256 fingerprint]
+    I --> J[(SQL document and chunk store)]
+    F --> K[Question]
+    K --> L[Lexical retrieval]
+    J --> L
+    L --> M[Retrieved source excerpts]
+    M --> N[FastAPI analysis gateway]
+    N --> O[Server-side Anthropic credential]
+    O --> P[Answer with citation labels]
+    P --> F
 ```
 
 This diagram describes the current prototype, not a production architecture. The React client sends prompts to a FastAPI gateway. The gateway reads the Anthropic key from its server environment; it does not accept provider keys from the browser. The source workspace stores document metadata and text chunks in a local SQL database, uses lexical retrieval as a transparent baseline, and asks the model to cite retrieved source labels. The bundled records are synthetic scenarios and must not be cited as clinical evidence.
@@ -58,7 +60,7 @@ This diagram describes the current prototype, not a production architecture. The
 - **Provider security:** server-side environment secret, prompt-size validation, provider timeout, restricted CORS
 - **Language:** JavaScript / JSX
 - **LLM integration experiment:** Anthropic Messages API
-- **Automated tests:** Jest via Create React App (response parsing and provider error handling)
+- **Automated tests:** Jest via Create React App; pytest API tests for upload, retrieval, citation metadata, and provider configuration
 - **Data:** local sample trial records
 - **UI structure:** reusable components, tab-based workflows, shared style tokens
 
@@ -81,7 +83,7 @@ neurotrial/
 │   │   │   ├── CompareTab.jsx
 │   │   │   ├── FailureTab.jsx
 │   │   │   ├── HypothesisTab.jsx
-│   │   │   └── CustomTab.jsx
+│   │   │   ├── CustomTab.jsx\n│   │   │   └── DocumentsTab.jsx
 │   │   ├── ApiKeyGate.jsx
 │   │   ├── Header.jsx
 │   │   └── Sidebar.jsx
