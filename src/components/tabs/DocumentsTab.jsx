@@ -3,7 +3,7 @@ import { C, styles } from "../../styles/tokens";
 import Section from "../Section";
 import Spinner from "../Spinner";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+const API_BASE_URL = process.env.REACT_APP_API_URL ?? "http://localhost:8000";
 
 async function apiRequest(path, options = {}) {
   const response = await fetch(`${API_BASE_URL}${path}`, options);
