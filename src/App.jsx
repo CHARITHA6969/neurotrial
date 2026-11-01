@@ -9,6 +9,7 @@ import CompareTab from "./components/tabs/CompareTab";
 import FailureTab from "./components/tabs/FailureTab";
 import HypothesisTab from "./components/tabs/HypothesisTab";
 import CustomTab from "./components/tabs/CustomTab";
+import DocumentsTab from "./components/tabs/DocumentsTab";
 
 const TABS = [
   { id: "parse",      label: "▹ Parse" },
@@ -16,6 +17,7 @@ const TABS = [
   { id: "failure",    label: "▹ Failure Analysis" },
   { id: "hypothesis", label: "▹ Hypotheses" },
   { id: "custom",     label: "▹ Add Trial" },
+  { id: "documents",  label: "▹ Sources & RAG" },
 ];
 
 export default function App() {
@@ -56,11 +58,12 @@ export default function App() {
             <div role="note" style={{ marginBottom: 14, padding: "10px 12px", border: `1px solid ${C.gold}66`, borderRadius: 4, background: `${C.gold}12`, color: C.text, fontSize: 11, lineHeight: 1.6 }}>
               <strong>DEMO DATA ONLY:</strong> Bundled trial records are fictional scenarios, not real clinical evidence. Do not cite their IDs or findings. Verify all research claims against primary sources.
             </div>
-            {tab === "parse"      && <ParseTab      trials={trials} apiKey={apiKey} />}
-            {tab === "compare"    && <CompareTab    trials={trials} apiKey={apiKey} />}
-            {tab === "failure"    && <FailureTab    trials={trials} apiKey={apiKey} />}
-            {tab === "hypothesis" && <HypothesisTab trials={trials} apiKey={apiKey} />}
+            {tab === "parse"      && <ParseTab      trials={trials} />}
+            {tab === "compare"    && <CompareTab    trials={trials} />}
+            {tab === "failure"    && <FailureTab    trials={trials} />}
+            {tab === "hypothesis" && <HypothesisTab trials={trials} />}
             {tab === "custom"     && <CustomTab     onAdd={addTrial} />}
+            {tab === "documents"  && <DocumentsTab />}
           </div>
         </div>
       </div>
