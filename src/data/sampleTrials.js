@@ -1,62 +1,89 @@
+/**
+ * Fictional demonstration records for exercising the Neurotrial UI.
+ *
+ * These are synthetic scenarios, not real clinical trials or extracted evidence.
+ * Do not cite their IDs, interventions, outcomes, sample sizes, or safety figures.
+ * Replace them with source-linked records before using the application for research.
+ */
 export const SAMPLE_TRIALS = [
   {
-    id: "NCT-2021-001",
-    title: "EMERALD-AD: Phase III Lecanemab in Early Alzheimer's",
-    content: `Trial ID: NCT-2021-001. Condition: Early Alzheimer's Disease (MCI to mild AD).
-Intervention: Lecanemab 10mg/kg IV biweekly. Sample size: 1795 participants (age 50-90, MMSE 22-30).
-Primary endpoint: CDR-SB at 18 months. Secondary endpoints: ADAS-Cog14, ADCS MCI-ADL, amyloid PET.
-Outcome: CDR-SB slowed by 27% vs placebo (p<0.001). Amyloid cleared in 78% of treated patients.
-Adverse effects: ARIA-E in 12.6%, ARIA-H in 17.3%, 3 deaths potentially related.
-Status: Completed. Result: Positive primary endpoint met.
-Biomarkers used: CSF Abeta42/40 ratio, p-tau181, amyloid PET.
-Population: Early-stage only; APOE4 carriers showed higher ARIA rates.`,
+    id: "DEMO-AD-001",
+    title: "Illustrative early-stage neurodegeneration study",
+    provenance: "Synthetic demonstration scenario",
+    sourceUrl: null,
+    isSynthetic: true,
+    content: `DEMONSTRATION RECORD — SYNTHETIC, NOT A REAL CLINICAL TRIAL.
+Trial ID: DEMO-AD-001. Condition: Illustrative early-stage neurodegenerative condition.
+Intervention: Experimental compound A, hypothetical dose and schedule.
+Sample size: 420 fictional participants.
+Primary endpoint: Change in a hypothetical cognitive-function scale at 18 months.
+Outcome: Positive in this fictional scenario; no real p-value or treatment effect is asserted.
+Safety: Hypothetical monitoring categories only; no real adverse-event rates.
+Status: Demonstration scenario.
+Data limitations: No protocol, registry record, statistical analysis plan, or source publication is supplied.`,
   },
   {
-    id: "NCT-2019-044",
-    title: "ENGAGE: Phase III Aducanumab High-Dose Arm",
-    content: `Trial ID: NCT-2019-044. Condition: Early Alzheimer's Disease.
-Intervention: Aducanumab 10mg/kg IV monthly. Sample size: 1638 participants.
-Primary endpoint: CDR-SB at 78 weeks. Secondary: MMSE, ADAS-Cog13, amyloid PET.
-Outcome: FAILED. No statistically significant slowing of CDR-SB decline (p=0.83 after interim futility analysis).
-Adverse effects: ARIA-E 35%, ARIA-H 20%. Trial halted March 2019.
-Status: Terminated (futility). Result: Primary endpoint not met.
-Biomarkers: Amyloid PET required for enrollment. High amyloid burden confirmed in >95%.
-Notes: Protocol amendment changed dosing mid-trial; inconsistent titration may have confounded results.`,
+    id: "DEMO-AD-002",
+    title: "Illustrative biomarker-enriched study with a null result",
+    provenance: "Synthetic demonstration scenario",
+    sourceUrl: null,
+    isSynthetic: true,
+    content: `DEMONSTRATION RECORD — SYNTHETIC, NOT A REAL CLINICAL TRIAL.
+Trial ID: DEMO-AD-002. Condition: Illustrative neurodegenerative condition.
+Intervention: Experimental compound B, hypothetical monthly administration.
+Sample size: 610 fictional participants.
+Primary endpoint: Change in a hypothetical functional scale at 16 months.
+Outcome: Null result in this fictional scenario; no real efficacy estimate is asserted.
+Safety: Not specified in this synthetic example.
+Status: Demonstration scenario.
+Design note: The scenario includes biomarker-based eligibility but provides no validated biomarker performance data.`,
   },
   {
-    id: "NCT-2020-112",
-    title: "CLARITY-PD: Phase II Prasinezumab in Parkinson's",
-    content: `Trial ID: NCT-2020-112. Condition: Early Parkinson's Disease (Hoehn & Yahr 1-2).
-Intervention: Prasinezumab (anti-alpha-synuclein antibody) 1500mg IV monthly. Sample size: 316 participants.
-Primary endpoint: MDS-UPDRS Part III motor score at 52 weeks.
-Outcome: Primary endpoint FAILED (p=0.37). Exploratory fast-progressors subgroup showed trend (p=0.097).
-Adverse effects: Infusion reactions 7%, mild. No serious safety signals.
-Status: Completed Phase II. Moving to Phase II extension in fast-progressors.
-Biomarkers: Alpha-synuclein seed amplification assay (SAA), DaTscan.
-Population issue: Heterogeneous progression rates diluted signal; biomarker stratification insufficient.`,
+    id: "DEMO-PD-003",
+    title: "Illustrative movement-disorder subgroup analysis",
+    provenance: "Synthetic demonstration scenario",
+    sourceUrl: null,
+    isSynthetic: true,
+    content: `DEMONSTRATION RECORD — SYNTHETIC, NOT A REAL CLINICAL TRIAL.
+Trial ID: DEMO-PD-003. Condition: Illustrative movement disorder.
+Intervention: Experimental compound C, hypothetical infusion schedule.
+Sample size: 250 fictional participants.
+Primary endpoint: Change in a hypothetical motor assessment at 12 months.
+Outcome: Primary endpoint not met in this fictional scenario; a subgroup pattern is exploratory only.
+Safety: No real safety findings are represented.
+Status: Demonstration scenario.
+Data limitations: Subgroup definitions and multiplicity controls are not provided.`,
   },
   {
-    id: "NCT-2022-078",
-    title: "ALTO: Phase III Atabecestat in Preclinical AD",
-    content: `Trial ID: NCT-2022-078. Condition: Preclinical Alzheimer's (amyloid+ cognitively normal).
-Intervention: Atabecestat (BACE1 inhibitor) 25mg oral daily. Sample size: 557 participants.
-Primary endpoint: Composite cognitive score at 36 months.
-Outcome: FAILED. Cognitive scores WORSENED in treatment arm vs placebo (p=0.04 favoring placebo).
-Adverse effects: Liver enzyme elevations 4x ULN in 4.5% requiring discontinuation.
-Status: Terminated (harm signal). Result: Negative - drug caused harm.
-Mechanism concern: BACE1 inhibition blocked multiple substrates beyond amyloid; neuregulin pathway disruption suspected.
-Biomarkers: Amyloid PET, CSF Abeta42. All participants amyloid positive at baseline.`,
+    id: "DEMO-AD-004",
+    title: "Illustrative tolerability-limited development program",
+    provenance: "Synthetic demonstration scenario",
+    sourceUrl: null,
+    isSynthetic: true,
+    content: `DEMONSTRATION RECORD — SYNTHETIC, NOT A REAL CLINICAL TRIAL.
+Trial ID: DEMO-AD-004. Condition: Illustrative preclinical neurodegenerative condition.
+Intervention: Experimental compound D, hypothetical oral administration.
+Sample size: 180 fictional participants.
+Primary endpoint: Change in a hypothetical composite measure at 24 months.
+Outcome: Program discontinued in this fictional scenario after a hypothetical tolerability review.
+Safety: No real adverse-event type, frequency, or causal relationship is asserted.
+Status: Demonstration scenario.
+Data limitations: No independent safety review or source documents are available.`,
   },
   {
-    id: "NCT-2023-031",
-    title: "HOPE-MDD: Phase III Psilocybin-Assisted Therapy in TRD",
-    content: `Trial ID: NCT-2023-031. Condition: Treatment-Resistant Major Depressive Disorder.
-Intervention: Psilocybin 25mg single dose + psychological support. Sample size: 233 participants.
-Primary endpoint: MADRS score change at 3 weeks. Secondary: QIDS, HAM-D, functional outcomes at 12 weeks.
-Outcome: MADRS reduced -12.8 vs -7.4 placebo (p=0.002). Response rate 37% vs 18%.
-Adverse effects: Transient anxiety during session 28%, headache 15%, no serious psychiatric adverse events.
-Status: Completed. Result: Positive primary endpoint.
-Biomarkers: None used for stratification. EEG markers of neuroplasticity explored post-hoc.
-Population: Failed >= 2 prior antidepressants; high chronicity (avg illness 9 years).`,
+    id: "DEMO-MDD-005",
+    title: "Illustrative adjunctive intervention feasibility study",
+    provenance: "Synthetic demonstration scenario",
+    sourceUrl: null,
+    isSynthetic: true,
+    content: `DEMONSTRATION RECORD — SYNTHETIC, NOT A REAL CLINICAL TRIAL.
+Trial ID: DEMO-MDD-005. Condition: Illustrative treatment-resistant mood disorder.
+Intervention: Hypothetical adjunctive intervention with structured support.
+Sample size: 90 fictional participants.
+Primary endpoint: Change in a hypothetical symptom scale at 8 weeks.
+Outcome: Feasibility signal in this fictional scenario; no real response rate or effect size is asserted.
+Safety: Not specified in this synthetic example.
+Status: Demonstration scenario.
+Data limitations: No comparator details, protocol, or source publication is supplied.`,
   },
 ];
