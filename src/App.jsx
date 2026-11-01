@@ -21,13 +21,13 @@ const TABS = [
 ];
 
 export default function App() {
-  const [apiKey, setApiKey] = useState(null);
+  const [workspaceReady, setWorkspaceReady] = useState(false);
   const [trials, setTrials] = useState(SAMPLE_TRIALS);
   const [tab, setTab] = useState("parse");
 
   const addTrial = useCallback((t) => setTrials((prev) => [...prev, t]), []);
 
-  if (!apiKey) return <ApiKeyGate onKey={setApiKey} />;
+  if (!workspaceReady) return <ApiKeyGate onContinue={() => setWorkspaceReady(true)} />;
 
   return (
     <div style={styles.app}>
@@ -41,7 +41,7 @@ export default function App() {
         button:hover:not(:disabled) { filter: brightness(1.15); }
       `}</style>
 
-      <Header trialCount={trials.length} onLogout={() => setApiKey(null)} />
+      <Header trialCount={trials.length} onLogout={() => setWorkspaceReady(false)} />
 
       <div style={styles.layout}>
         <Sidebar trials={trials} />
