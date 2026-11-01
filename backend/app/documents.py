@@ -49,7 +49,7 @@ def get_db():
 
 
 def split_into_chunks(text: str, size: int = 1200, overlap: int = 180) -> list[str]:
-    normalized = re.sub(r"\\s+", " ", text).strip()
+    normalized = re.sub(r"\s+", " ", text).strip()
     if not normalized:
         return []
     chunks = []
