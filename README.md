@@ -72,7 +72,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Set `ANTHROPIC_API_KEY` in the backend process environment. Never place it in the React application or a browser field.
+Set `ANTHROPIC_API_KEY` in the backend process environment. The current default model is `claude-sonnet-5-5`; set `ANTHROPIC_MODEL` to override it. Never place provider credentials in the React application or a browser field. The example values are in [`backend/.env.example`](backend/.env.example).
 
 macOS/Linux:
 
