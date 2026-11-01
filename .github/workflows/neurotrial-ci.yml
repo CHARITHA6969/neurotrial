@@ -32,7 +32,7 @@ jobs:
           node-version: 20
           cache: npm
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
       - name: Run tests
         run: CI=true npm test -- --watchAll=false
       - name: Build production bundle
