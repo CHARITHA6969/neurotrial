@@ -1,5 +1,6 @@
 import hashlib
 import os
+import re
 from io import BytesIO
 
 import httpx
@@ -222,6 +223,15 @@ def ask_sources(payload: AskRequest, db: Session = Depends(get_db)):
         "Answer with inline citations [S1], [S2], etc. Do not use outside knowledge."
     )
     answer = _provider_text(prompt)
+    available_citations = {item["citation_id"] for item in matches}
+    referenced_citations = set(re.findall(r"\\[(S\\d+)\\]", answer))
+    unknown_citations = referenced_citations - available_citations
+    if unknown_citations:
+        raise HTTPException(
+            status_code=502,
+            detail="The AI provider returned a citation that does not match a retrieved source.",
+        )
+
     citations = [
         Citation(
             citation_id=item["citation_id"],
