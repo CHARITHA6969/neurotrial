@@ -99,3 +99,44 @@ def test_ask_rejects_citations_that_do_not_map_to_retrieved_sources(monkeypatch)
     )
     assert response.status_code == 502
     assert "citation" in response.json()["detail"].lower()
+
+
+
+def test_provider_uses_configured_active_model_and_api_version(monkeypatch):
+    from app import main
+
+    captured = {}
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "unit-test-key")
+    monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
+
+    class FakeResponse:
+        status_code = 200
+
+        @staticmethod
+        def json():
+            return {"content": [{"type": "text", "text": "Synthetic provider response."}]}
+
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def post(self, url, headers, json):
+            captured["url"] = url
+            captured["headers"] = headers
+            captured["body"] = json
+            return FakeResponse()
+
+    monkeypatch.setattr(main.httpx, "Client", FakeClient)
+
+    result = main._provider_text("Summarize the supplied research excerpt.")
+
+    assert result == "Synthetic provider response."
+    assert captured["url"] == "https://api.anthropic.com/v1/messages"
+    assert captured["headers"]["anthropic-version"] == "2026-10-21"
+    assert captured["body"]["model"] == "claude-sonnet-5-5"
