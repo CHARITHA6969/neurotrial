@@ -11,6 +11,13 @@ CRITICAL RULES:
 You respond only with valid JSON matching the schema requested. No markdown backticks, no preamble.`;
 
 export async function callClaude(userPrompt, apiKey) {
+  if (typeof userPrompt !== "string" || !userPrompt.trim()) {
+    throw new Error("A non-empty analysis prompt is required.");
+  }
+  if (typeof apiKey !== "string" || !apiKey.trim()) {
+    throw new Error("An Anthropic API key is required for this prototype request.");
+  }
+
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -26,10 +33,27 @@ export async function callClaude(userPrompt, apiKey) {
       messages: [{ role: "user", content: userPrompt }],
     }),
   });
-  if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err.error?.message || `API error: ${response.status}`);
+
+  // Read the response body once and handle non-JSON provider/proxy errors safely.
+  const rawBody = await response.text();
+  let data = null;
+  try {
+    data = rawBody ? JSON.parse(rawBody) : null;
+  } catch {
+    data = null;
   }
-  const data = await response.json();
-  return data.content.filter((b) => b.type === "text").map((b) => b.text).join("");
+
+  if (!response.ok) {
+    throw new Error(data?.error?.message || `Anthropic API request failed (HTTP ${response.status}).`);
+  }
+
+  const text = Array.isArray(data?.content)
+    ? data.content.filter((block) => block?.type === "text").map((block) => block.text).join("")
+    : "";
+
+  if (!text.trim()) {
+    throw new Error("The model returned no text content. Please retry or inspect the provider response.");
+  }
+
+  return text;
 }
