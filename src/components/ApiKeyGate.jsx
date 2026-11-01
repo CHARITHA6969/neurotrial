@@ -1,9 +1,6 @@
-import { useState } from "react";
 import { C, styles } from "../styles/tokens";
 
 export default function ApiKeyGate({ onKey }) {
-  const [val, setVal] = useState("");
-
   return (
     <div style={{
       minHeight: "100vh", background: C.bg, display: "flex",
@@ -15,27 +12,17 @@ export default function ApiKeyGate({ onKey }) {
         <div style={{ fontSize: 16, fontWeight: 700, color: C.accent, marginBottom: 6, letterSpacing: 1 }}>
           NEUROTRIAL INTELLIGENCE
         </div>
-        <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 24 }}>
-          Prototype only · key is used in the browser; do not use a production key
+        <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 20 }}>
+          Server-side AI gateway · no API key is entered or stored in this browser
         </div>
-        <label style={styles.label}>Anthropic API Key</label>
-        <input
-          type="password"
-          value={val}
-          onChange={(e) => setVal(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && val.startsWith("sk-") && onKey(val)}
-          style={{ ...styles.textarea, height: 40, resize: "none", padding: "8px 12px", marginBottom: 12 }}
-          placeholder="sk-ant-..."
-        />
-        <button
-          onClick={() => onKey(val)}
-          disabled={!val.startsWith("sk-")}
-          style={{ ...styles.btn(), ...(!val.startsWith("sk-") ? styles.btnDisabled : {}) }}
-        >
-          Launch System
+        <div style={{ ...styles.warningBox, textAlign: "left", marginBottom: 18 }}>
+          The analysis service must be running and configured with its server-side ANTHROPIC_API_KEY environment variable.
+        </div>
+        <button onClick={() => onKey(true)} style={styles.btn()}>
+          Open Research Workspace
         </button>
         <div style={{ fontSize: 10, color: C.textDim, marginTop: 12 }}>
-          Browser-side API access is not production-safe. Do not submit confidential or patient data.
+          Demo records are synthetic. Do not submit patient-identifiable or confidential data.
         </div>
       </div>
     </div>
