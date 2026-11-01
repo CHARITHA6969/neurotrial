@@ -1,6 +1,5 @@
 from fastapi.testclient import TestClient
 
-from app.documents import SessionLocal
 from app.main import app
 
 client = TestClient(app)
@@ -49,3 +48,29 @@ def test_document_upload_rejects_unsupported_extension():
 def test_retrieval_requires_matching_source():
     response = client.post("/api/v1/ask", json={"question": "unrelated vocabulary not present"})
     assert response.status_code == 404
+
+
+
+def test_ask_returns_source_citations(monkeypatch):
+    from app import main
+
+    monkeypatch.setattr(main, "_provider_text", lambda prompt: "The report describes a cognitive endpoint [S1].")
+    upload = client.post(
+        "/api/v1/documents",
+        files={"file": ("cognitive-endpoint-source.txt", b"The randomized trial measured a cognitive endpoint at week 24.", "text/plain")},
+    )
+    assert upload.status_code == 200
+    response = client.post("/api/v1/ask", json={"question": "What cognitive endpoint was measured?"})
+    assert response.status_code == 200
+    result = response.json()
+    assert "[S1]" in result["answer"]
+    assert result["citations"][0]["filename"] == "cognitive-endpoint-source.txt"
+    assert "cognitive endpoint" in result["citations"][0]["excerpt"]
+
+
+def test_chunking_normalizes_whitespace():
+    from app.documents import split_into_chunks
+
+    chunks = split_into_chunks("Trial\n\nresults   showed improvement.")
+    assert len(chunks) == 1
+    assert chunks[0] == "Trial results showed improvement."
