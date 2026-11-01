@@ -16,7 +16,7 @@ export default function ApiKeyGate({ onKey }) {
           NEUROTRIAL INTELLIGENCE
         </div>
         <div style={{ fontSize: 11, color: C.textMuted, marginBottom: 24 }}>
-          Enter your Anthropic API key to begin
+          Prototype only · key is used in the browser; do not use a production key
         </div>
         <label style={styles.label}>Anthropic API Key</label>
         <input
@@ -35,7 +35,7 @@ export default function ApiKeyGate({ onKey }) {
           Launch System
         </button>
         <div style={{ fontSize: 10, color: C.textDim, marginTop: 12 }}>
-          Key stored in memory only — never persisted
+          Browser-side API access is not production-safe. Do not submit confidential or patient data.
         </div>
       </div>
     </div>
