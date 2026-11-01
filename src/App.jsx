@@ -53,6 +53,9 @@ export default function App() {
             ))}
           </div>
           <div style={styles.content}>
+            <div role="note" style={{ marginBottom: 14, padding: "10px 12px", border: `1px solid ${C.gold}66`, borderRadius: 4, background: `${C.gold}12`, color: C.text, fontSize: 11, lineHeight: 1.6 }}>
+              <strong>DEMO DATA ONLY:</strong> Bundled trial records are fictional scenarios, not real clinical evidence. Do not cite their IDs or findings. Verify all research claims against primary sources.
+            </div>
             {tab === "parse"      && <ParseTab      trials={trials} apiKey={apiKey} />}
             {tab === "compare"    && <CompareTab    trials={trials} apiKey={apiKey} />}
             {tab === "failure"    && <FailureTab    trials={trials} apiKey={apiKey} />}
