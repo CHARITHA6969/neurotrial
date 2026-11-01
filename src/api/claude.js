@@ -21,7 +21,7 @@ export async function callClaude(userPrompt) {
   if (typeof userPrompt !== "string" || !userPrompt.trim()) {
     throw new Error("A non-empty analysis prompt is required.");
   }
-  const baseUrl = process.env.REACT_APP_API_URL || "http://localhost:8000";
+  const baseUrl = process.env.REACT_APP_API_URL ?? "http://localhost:8000";
   const response = await fetch(`${baseUrl}/api/v1/analyze`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
