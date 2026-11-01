@@ -2,168 +2,154 @@
 
 [![CI](https://github.com/CHARITHA6969/neurotrial/actions/workflows/neurotrial-ci.yml/badge.svg)](https://github.com/CHARITHA6969/neurotrial/actions/workflows/neurotrial-ci.yml)
 
-**A React + FastAPI prototype for exploring LLM-assisted neuroscience clinical-trial intelligence.**
+**A React + FastAPI prototype for source-grounded neuroscience research workflows.**
 
-Neurotrial explores a researcher-oriented workflow for inspecting clinical-trial records, comparing studies, identifying reported failure factors, and developing hypotheses for further investigation.
+Neurotrial explores how an LLM-assisted research interface can help organize clinical-trial information, ingest scientific documents, retrieve relevant passages, and return answers with traceable source references.
 
-> **Project status:** Full-stack prototype with a React interface and a FastAPI analysis gateway. It uses explicitly synthetic demonstration records and is not a validated clinical research tool; it must not be used to make medical, treatment, or investment decisions.
+> **Research integrity:** The bundled trial scenarios are synthetic demonstration records, not real trial evidence. This prototype is not a validated clinical research or clinical decision-support system.
 
-## Problem space
+## Current capabilities
 
-Clinical-trial information is distributed across structured records and scientific documents. Researchers may need to compare study designs, populations, interventions, endpoints, and reported outcomes before forming a useful view of the evidence.
+- **Trial workspace:** parse, compare, and explore synthetic trial scenarios.
+- **Document ingestion:** upload PDF, TXT, and Markdown sources.
+- **Text extraction:** extract PDF text with pypdf and decode UTF-8 text sources.
+- **Chunking:** split extracted text into overlapping passages.
+- **Persistence:** store document metadata and chunks using SQLAlchemy.
+- **Retrieval:** rank passages using a lexical term-overlap baseline.
+- **Source citations:** return document and chunk identifiers with excerpts.
+- **LLM gateway:** route analysis through FastAPI, with the Anthropic credential held server-side.
+- **Frontend workspace:** browse uploaded sources and ask questions with returned citation metadata.
 
-Neurotrial is an exploration of how an LLM interface might help organize this work while preserving a distinction between source facts and model-generated interpretation.
+## Architecture
 
-## Current capabilities in the interface
+```text
+React application
+  ├── Trial analysis tabs
+  └── Source Library
+         |
+         v
+      FastAPI
+       ├── Document upload
+       ├── PDF / text extraction
+       ├── Chunking and SHA-256 fingerprint
+       ├── Lexical retrieval
+       └── Analysis gateway
+              |
+              v
+       Server-side Anthropic API
+              |
+              v
+       Answer + source references
 
-- **Parse:** inspect a trial and request a structured analysis.
-- **Compare:** examine multiple trials side by side.
-- **Failure analysis:** explore factors associated with unsuccessful or terminated trials.
-- **Hypotheses:** develop possible explanations or research questions from the available information.
-- **Add trial:** add a trial record to the current in-memory session.
-- **Sources & RAG:** upload PDF/TXT/Markdown sources, persist extracted text chunks, ask questions over retrieved excerpts, and inspect returned citation metadata.
-- **Sample dataset:** load fictional demonstration scenarios from the local application data; these are not real clinical trials or source evidence.
-
-The interface is organized into reusable React components and separate analysis tabs. Model requests are routed through the backend rather than sent directly from the browser.
-
-## Architecture today
-
-```mermaid
-flowchart TD
-    A[Researcher] --> B[React application]
-    B --> C[Trial workspace]
-    C --> D[Parse / Compare / Hypotheses]
-    D --> E[React API client]
-    B --> F[Source Library UI]
-    F --> G[FastAPI document API]
-    G --> H[PDF and text extraction]
-    H --> I[Chunking and SHA-256 fingerprint]
-    I --> J[(SQL document and chunk store)]
-    F --> K[Question]
-    K --> L[Lexical retrieval]
-    J --> L
-    L --> M[Retrieved source excerpts]
-    M --> N[FastAPI analysis gateway]
-    N --> O[Server-side Anthropic credential]
-    O --> P[Answer with citation labels]
-    P --> F
+SQLAlchemy store
+  ├── source_documents
+  └── document_chunks
 ```
-
-This diagram describes the current prototype, not a production architecture. The React client sends prompts to a FastAPI gateway. The gateway reads the Anthropic key from its server environment; it does not accept provider keys from the browser. The source workspace stores document metadata and text chunks in a local SQL database, uses lexical retrieval as a transparent baseline, and asks the model to cite retrieved source labels. The bundled records are synthetic scenarios and must not be cited as clinical evidence.
 
 ## Technology
 
-- **Frontend:** React 18
-- **Backend:** Python, FastAPI, HTTPX, SQLAlchemy
-- **Document processing:** pypdf, overlapping text chunks, SHA-256 document fingerprints
-- **Retrieval:** lexical term-overlap baseline with source/chunk citation metadata
-- **Provider security:** server-side environment secret, prompt-size validation, provider timeout, restricted CORS
-- **Language:** JavaScript / JSX
-- **LLM integration experiment:** Anthropic Messages API
-- **Automated tests:** Jest via Create React App; pytest API tests for upload, retrieval, citation metadata, and provider configuration
-- **Data:** local sample trial records
-- **UI structure:** reusable components, tab-based workflows, shared style tokens
-
-## Repository structure
-
-```text
-neurotrial/
-├── backend/
-│   ├── app/main.py
-│   ├── tests/test_api.py
-│   ├── requirements.txt
-│   └── Dockerfile
-├── public/
-├── src/
-│   ├── api/
-│   │   └── claude.js
-│   ├── components/
-│   │   ├── tabs/
-│   │   │   ├── ParseTab.jsx
-│   │   │   ├── CompareTab.jsx
-│   │   │   ├── FailureTab.jsx
-│   │   │   ├── HypothesisTab.jsx
-│   │   │   ├── CustomTab.jsx
-│   │   │   └── DocumentsTab.jsx
-│   │   ├── ApiKeyGate.jsx
-│   │   ├── Header.jsx
-│   │   └── Sidebar.jsx
-│   ├── data/
-│   │   └── sampleTrials.js
-│   ├── styles/
-│   └── App.jsx
-└── package.json
-```
+| Layer | Technologies |
+|---|---|
+| Frontend | React 18, JavaScript |
+| Backend | Python, FastAPI, HTTPX |
+| Document processing | pypdf, UTF-8 text, chunking |
+| Persistence | SQLAlchemy, SQLite by default, configurable PostgreSQL driver |
+| LLM integration | Anthropic Messages API |
+| Testing | Jest, pytest, FastAPI TestClient |
+| CI | GitHub Actions |
 
 ## Run locally
 
-Prerequisites: Node.js and npm.
+### 1. Start the backend
+
+```bash
+cd backend
+python -m venv .venv
+# Activate the environment, then:
+pip install -r requirements.txt
+```
+
+Set `ANTHROPIC_API_KEY` in the backend process environment. Never place it in the React application or a browser field.
+
+macOS/Linux:
+
+```bash
+export ANTHROPIC_API_KEY="your-server-side-key"
+uvicorn app.main:app --reload
+```
+
+PowerShell:
+
+```powershell
+$env:ANTHROPIC_API_KEY="your-server-side-key"
+uvicorn app.main:app --reload
+```
+
+The API documentation is available at [http://localhost:8000/docs](http://localhost:8000/docs).
+
+### 2. Start the frontend
+
+In another terminal:
 
 ```bash
 npm install
 npm start
 ```
 
-The development server starts at [http://localhost:3000](http://localhost:3000).
+Set `REACT_APP_API_URL` only if the backend is not running at `http://localhost:8000`.
 
-Start the backend in a second terminal:
+## API endpoints
 
-```bash
-cd backend
-python -m venv .venv
-# Activate the environment, then install dependencies:
-pip install -r requirements.txt
-# Configure ANTHROPIC_API_KEY in this server environment.
-uvicorn app.main:app --reload
-```
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/health` | Health check |
+| POST | `/api/v1/analyze` | Server-side LLM analysis |
+| POST | `/api/v1/documents` | Upload PDF/TXT/MD source |
+| GET | `/api/v1/documents` | List uploaded sources |
+| POST | `/api/v1/ask` | Ask a question over retrieved excerpts |
 
-Set `REACT_APP_API_URL` only if the backend is not at `http://localhost:8000`. The browser no longer receives or stores an Anthropic API key.
+## Tests
 
-Create a production build:
-
-```bash
-npm run build
-```
-
-Run API-helper tests:
+Frontend:
 
 ```bash
 npm test -- --watchAll=false
+npm run build
 ```
 
-The frontend tests cover JSON parsing, malformed output, server-proxy request construction, and backend errors. Backend tests cover health, missing server credentials, invalid/oversized prompts, text upload, unsupported file types, retrieval, citations, and chunk normalization. Run backend tests from `backend/` with `PYTHONPATH=. pytest`.
+Backend:
 
-## Important security and research limitations
+```bash
+cd backend
+PYTHONPATH=. pytest
+```
 
-- **Do not use real patient data or confidential research data** with this prototype.
-- The backend proxy reads `ANTHROPIC_API_KEY` from its runtime environment. Document ingestion is currently a single-user development feature: authentication, per-user document isolation, quotas, rate limiting, audit controls, managed secret storage, and private object storage are required before public deployment.
-- All bundled trial records are synthetic demonstration scenarios, not real trials, registry records, or validated research data. Their IDs and scientific details must not be cited.
-- LLM-generated outputs can be incomplete or incorrect. Every claim, number, endpoint, and outcome must be checked against the original trial source.
-- Hypotheses are exploratory suggestions, not established scientific conclusions.
-- Trial status, failure reasons, and outcome definitions require careful source-specific interpretation.
+CI runs frontend tests/build and backend API tests.
 
-The analysis prompt is designed to discourage fabricated trial facts, separate facts from inferences, and flag uncertainty. This is a useful guardrail, not a substitute for evidence retrieval, citations, or expert review.
+## Retrieval details and limitations
 
-See [Data provenance and research integrity](docs/data-provenance.md) and [Security model and deployment boundary](docs/security-model.md) for explicit requirements and current limitations.
+The current retriever uses lexical term overlap. It is intentionally a transparent baseline; it does not yet use embedding-based semantic search, vector indexing, hybrid retrieval, or reranking.
 
-## Roadmap
+The citation response includes document and chunk identifiers plus text excerpts. These references make source inspection possible, but do not guarantee that every model-generated claim is correctly supported. Citation correctness needs a dedicated evaluation set and human review.
 
-1. Add authentication, per-user quotas, rate limiting, and request audit controls to the backend API.
-2. Add semantic embedding retrieval, re-ranking, and source-level citations for every extracted claim.
-3. Add document ownership, authentication, authorization, upload malware scanning, and private storage.
-4. Define typed schemas and validate all model responses; the shared JSON-object parser now rejects malformed and non-object output.
-5. Build evaluation cases for extraction accuracy, comparison consistency, and unsupported claims.
-6. Add error handling, request tracing, tests, and CI.
-7. Add human review and exportable research notes with links to source records.
+## Security and research limitations
 
-## Design principles
+- Do not upload patient-identifiable or confidential research data.
+- The Anthropic key is read from the backend environment; the browser does not receive it.
+- The document service is currently a single-user development feature without authentication or per-user access isolation.
+- Rate limiting, quotas, malware scanning, private object storage, durable audit logs, and production secret management remain to be added.
+- AI-generated interpretations and hypotheses must be checked against original source documents.
 
-- Evidence before interpretation.
-- Explicit separation of facts, inferences, and hypotheses.
-- Source traceability for important claims.
-- Clear uncertainty when the source does not support a conclusion.
-- Human review for scientific decisions.
+See [data provenance](docs/data-provenance.md) and [security model](docs/security-model.md).
+
+## Engineering priorities
+
+1. Add authentication and per-user document ownership.
+2. Add embedding-based semantic retrieval and reranking.
+3. Evaluate retrieval relevance and citation support with a reproducible test set.
+4. Add private file storage, malware scanning, rate limits, and audit controls.
+5. Improve extraction for tables and complex scientific PDF layouts.
 
 ---
 
-Neurotrial is an engineering prototype for responsible AI-assisted research workflows. Feedback and contributions are welcome.
+[Portfolio](https://charithapittala.github.io) · [GitHub profile](https://github.com/CHARITHA6969)
