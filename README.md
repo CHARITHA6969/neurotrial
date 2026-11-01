@@ -152,4 +152,4 @@ See [data provenance](docs/data-provenance.md) and [security model](docs/securit
 
 ---
 
-[Portfolio](https://charithapittala.github.io) · [GitHub profile](https://github.com/CHARITHA6969)
+[Portfolio](https://charitha6969.github.io/charithapittala.github.io) · [GitHub profile](https://github.com/CHARITHA6969)
