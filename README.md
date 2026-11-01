@@ -83,7 +83,8 @@ neurotrial/
 │   │   │   ├── CompareTab.jsx
 │   │   │   ├── FailureTab.jsx
 │   │   │   ├── HypothesisTab.jsx
-│   │   │   ├── CustomTab.jsx\n│   │   │   └── DocumentsTab.jsx
+│   │   │   ├── CustomTab.jsx
+│   │   │   └── DocumentsTab.jsx
 │   │   ├── ApiKeyGate.jsx
 │   │   ├── Header.jsx
 │   │   └── Sidebar.jsx
