@@ -1,6 +1,6 @@
 import { C, styles } from "../styles/tokens";
 
-export default function ApiKeyGate({ onKey }) {
+export default function ApiKeyGate({ onContinue }) {
   return (
     <div style={{
       minHeight: "100vh", background: C.bg, display: "flex",
@@ -18,7 +18,7 @@ export default function ApiKeyGate({ onKey }) {
         <div style={{ ...styles.warningBox, textAlign: "left", marginBottom: 18 }}>
           The analysis service must be running and configured with its server-side ANTHROPIC_API_KEY environment variable.
         </div>
-        <button onClick={() => onKey(true)} style={styles.btn()}>
+        <button onClick={onContinue} style={styles.btn()}>
           Open Research Workspace
         </button>
         <div style={{ fontSize: 10, color: C.textDim, marginTop: 12 }}>
