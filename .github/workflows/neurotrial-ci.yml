@@ -8,6 +8,9 @@ on:
       - "package.json"
       - "package-lock.json"
       - "backend/**"
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - "nginx.conf"
       - ".github/workflows/neurotrial-ci.yml"
   pull_request:
     paths:
