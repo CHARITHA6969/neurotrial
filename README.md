@@ -16,8 +16,8 @@ Neurotrial explores how an LLM-assisted research interface can help organize cli
 - **Chunking:** split extracted text into overlapping passages.
 - **Persistence:** store document metadata and chunks using SQLAlchemy.
 - **Retrieval:** rank passages with a lightweight BM25-style lexical retriever, stop-word filtering, inverse-document-frequency weighting, and document-length normalization.
-- **Deterministic ranking tests:** exercise tokenization, ranking order, empty queries, filters, and chunk whitespace normalization.
-- **Source citations:** return document and chunk identifiers with excerpts.
+- **Deterministic retrieval and citation tests:** exercise tokenization, BM25 ranking order, empty queries, document filters, chunk whitespace normalization, and rejection of unknown citation labels.
+- **Source citations:** return document and chunk identifiers with excerpts, and reject generated `[S#]` citation labels that do not map to retrieved sources.
 - **LLM gateway:** route analysis through FastAPI, with the Anthropic credential held server-side.
 - **Frontend workspace:** browse uploaded sources and ask questions with returned citation metadata.
 
@@ -131,7 +131,7 @@ CI runs frontend tests/build and backend API tests, including isolated tests for
 
 The current retriever is a lightweight BM25-style lexical baseline. It tokenizes text, filters common stop words, applies inverse-document-frequency weighting, and normalizes for passage length. This improves ranking over raw term counts while remaining deterministic and inspectable. It is not semantic search: paraphrases and related concepts may be missed. Embedding-based retrieval, vector indexing, hybrid search, and reranking remain future work.
 
-The citation response includes document and chunk identifiers plus text excerpts. These references make source inspection possible, but do not guarantee that every model-generated claim is correctly supported. Citation correctness needs a dedicated evaluation set and human review.
+The API returns document and chunk identifiers with excerpts. It also rejects explicit `[S#]` labels that do not correspond to the retrieved passages. This catches invented source IDs, but does not prove that a cited passage supports the attached claim or that every factual claim is cited. Citation entailment still needs a dedicated evaluation set and human review.
 
 ## Security and research limitations
 
