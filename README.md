@@ -4,7 +4,7 @@
 
 Neurotrial explores a researcher-oriented workflow for inspecting clinical-trial records, comparing studies, identifying reported failure factors, and developing hypotheses for further investigation.
 
-> **Project status:** Frontend prototype / experimental integration. The current app uses bundled sample trial data and a direct browser-to-Anthropic API call behind an API-key gate. It is not a validated clinical research tool and must not be used to make medical, treatment, or investment decisions.
+> **Project status:** Frontend prototype / experimental integration. The current app uses explicitly synthetic demonstration records and a direct browser-to-Anthropic API call behind an API-key gate. It is not a validated clinical research tool and must not be used to make medical, treatment, or investment decisions.
 
 ## Problem space
 
@@ -19,7 +19,7 @@ Neurotrial is an exploration of how an LLM interface might help organize this wo
 - **Failure analysis:** explore factors associated with unsuccessful or terminated trials.
 - **Hypotheses:** develop possible explanations or research questions from the available information.
 - **Add trial:** add a trial record to the current in-memory session.
-- **Sample dataset:** load example trial records from the local application data.
+- **Sample dataset:** load fictional demonstration scenarios from the local application data; these are not real clinical trials or source evidence.
 
 The interface is organized into reusable React components and separate analysis tabs.
 
@@ -42,7 +42,7 @@ flowchart TD
     J --> K[Structured model response]
 ```
 
-This diagram describes the current prototype, not a production architecture. The current API helper calls Anthropic directly from the browser; a secure backend has not yet been implemented.
+This diagram describes the current prototype, not a production architecture. The current API helper calls Anthropic directly from the browser; a secure backend has not yet been implemented. The bundled records are synthetic scenarios and must not be cited as clinical evidence.
 
 ## Technology
 
@@ -98,12 +98,14 @@ npm run build
 
 - **Do not use real patient data or confidential research data** with this prototype.
 - The current API-key gate stores the key in client-side application state and sends requests directly from the browser. This is not an appropriate production secret-management pattern. A backend proxy with server-side secret storage, authentication, rate limits, and audit logging is required.
-- Sample trial records are for interface demonstration. They are not a curated or validated research dataset.
+- All bundled trial records are synthetic demonstration scenarios, not real trials, registry records, or validated research data. Their IDs and scientific details must not be cited.
 - LLM-generated outputs can be incomplete or incorrect. Every claim, number, endpoint, and outcome must be checked against the original trial source.
 - Hypotheses are exploratory suggestions, not established scientific conclusions.
 - Trial status, failure reasons, and outcome definitions require careful source-specific interpretation.
 
 The analysis prompt is designed to discourage fabricated trial facts, separate facts from inferences, and flag uncertainty. This is a useful guardrail, not a substitute for evidence retrieval, citations, or expert review.
+
+See [Data provenance and research integrity](docs/data-provenance.md) and [Security model and deployment boundary](docs/security-model.md) for explicit requirements and current limitations.
 
 ## Roadmap
 
