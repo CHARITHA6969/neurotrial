@@ -87,7 +87,7 @@ def _provider_text(prompt: str) -> str:
     if not api_key:
         raise HTTPException(status_code=503, detail="AI analysis is not configured on the server.")
     body = {
-        "model": os.getenv("ANTHROPIC_MODEL", "claude-sonnet-4-20250514"),
+        "model": os.getenv("ANTHROPIC_MODEL", "claude-sonnet-5-5"),
         "max_tokens": 2500,
         "system": SYSTEM_PROMPT,
         "messages": [{"role": "user", "content": prompt}],
@@ -95,7 +95,7 @@ def _provider_text(prompt: str) -> str:
     headers = {
         "content-type": "application/json",
         "x-api-key": api_key,
-        "anthropic-version": "2023-06-01",
+        "anthropic-version": "2026-10-21",
     }
     try:
         with httpx.Client(timeout=httpx.Timeout(45.0, connect=10.0)) as client:
