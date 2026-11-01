@@ -19,6 +19,9 @@ on:
       - "package.json"
       - "package-lock.json"
       - "backend/**"
+      - "docker-compose.yml"
+      - "Dockerfile"
+      - "nginx.conf"
       - ".github/workflows/neurotrial-ci.yml"
   workflow_dispatch:
 
