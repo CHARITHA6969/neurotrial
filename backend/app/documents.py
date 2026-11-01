@@ -73,7 +73,7 @@ def split_into_chunks(text: str, size: int = 1200, overlap: int = 180) -> list[s
 
 # A compact stop-word list keeps frequent grammatical words from dominating retrieval.
 _STOP_WORDS = {
-    "about", "after", "again", "against", "also", "are", "because", "been", "before",
+    "about", "after", "again", "against", "also", "and", "are", "because", "been", "before",
     "being", "between", "both", "but", "can", "could", "did", "does", "doing", "down",
     "during", "each", "few", "for", "from", "further", "had", "has", "have", "having",
     "her", "here", "hers", "him", "his", "how", "into", "its", "itself", "just", "more",
