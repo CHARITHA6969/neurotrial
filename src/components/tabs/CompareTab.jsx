@@ -33,7 +33,7 @@ Schema:
 Trial data:
 ${trialsText}`;
 
-      const raw = await callClaude(prompt, apiKey);
+      const raw = await callClaude(prompt);
       setResult(parseModelJson(raw));
     } catch (e) { setError(e.message); }
     setLoading(false);
