@@ -21,6 +21,8 @@ Neurotrial explores how an LLM-assisted research interface can help organize cli
 - **LLM gateway:** route analysis through FastAPI, with the Anthropic credential held server-side.
 - **Frontend workspace:** browse uploaded sources and ask questions with returned citation metadata.
 
+**Architecture:** [Ingestion, retrieval, and citation-validation flow](docs/architecture.md).
+
 ## Architecture
 
 ```text
