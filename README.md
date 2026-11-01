@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/CHARITHA6969/neurotrial/actions/workflows/neurotrial-ci.yml/badge.svg)](https://github.com/CHARITHA6969/neurotrial/actions/workflows/neurotrial-ci.yml)
 
-**A React prototype for exploring LLM-assisted neuroscience clinical-trial intelligence.**
+**A React + FastAPI prototype for exploring LLM-assisted neuroscience clinical-trial intelligence.**
 
 Neurotrial explores a researcher-oriented workflow for inspecting clinical-trial records, comparing studies, identifying reported failure factors, and developing hypotheses for further investigation.
 
@@ -44,11 +44,13 @@ flowchart TD
     J --> K[Structured model response]
 ```
 
-This diagram describes the current prototype, not a production architecture. The current API helper calls Anthropic directly from the browser; a secure backend has not yet been implemented. The bundled records are synthetic scenarios and must not be cited as clinical evidence.
+This diagram describes the current prototype, not a production architecture. The React client now sends prompts to a FastAPI gateway. The gateway reads the Anthropic key from its server environment; it does not accept provider keys from the browser. The bundled records are synthetic scenarios and must not be cited as clinical evidence.
 
 ## Technology
 
 - **Frontend:** React 18
+- **Backend:** Python, FastAPI, HTTPX
+- **Provider security:** server-side environment secret, prompt-size validation, provider timeout, restricted CORS
 - **Language:** JavaScript / JSX
 - **LLM integration experiment:** Anthropic Messages API
 - **Automated tests:** Jest via Create React App (response parsing and provider error handling)
@@ -59,7 +61,7 @@ This diagram describes the current prototype, not a production architecture. The
 
 ```text
 neurotrial/
-├── public/
+├── backend/\n│   ├── app/main.py\n│   ├── tests/test_api.py\n│   ├── requirements.txt\n│   └── Dockerfile\n├── public/
 ├── src/
 │   ├── api/
 │   │   └── claude.js
@@ -89,7 +91,7 @@ npm install
 npm start
 ```
 
-The development server starts at [http://localhost:3000](http://localhost:3000).
+The development server starts at [http://localhost:3000](http://localhost:3000).\n\nStart the backend in a second terminal:\n\n```bash\ncd backend\npython -m venv .venv\n# Activate the environment, then install dependencies:\npip install -r requirements.txt\n# Configure ANTHROPIC_API_KEY in this server environment.\nuvicorn app.main:app --reload\n```\n\nSet `REACT_APP_API_URL` only if the backend is not at `http://localhost:8000`. The browser no longer receives or stores an Anthropic API key.
 
 Create a production build:
 
@@ -103,12 +105,12 @@ Run API-helper tests:
 npm test -- --watchAll=false
 ```
 
-The tests cover JSON object parsing (including fenced output), malformed model responses, missing request inputs, provider errors, and text-block extraction.
+The frontend tests cover JSON parsing, malformed output, server-proxy request construction, and backend errors. Backend tests cover health, missing server credentials, and invalid/oversized prompts.
 
 ## Important security and research limitations
 
 - **Do not use real patient data or confidential research data** with this prototype.
-- The current API-key gate stores the key in client-side application state and sends requests directly from the browser. This is not an appropriate production secret-management pattern. A backend proxy with server-side secret storage, authentication, rate limits, and audit logging is required.
+- The backend proxy reads `ANTHROPIC_API_KEY` from its runtime environment. The current service still needs authentication, per-user quotas, rate limiting, audit controls, and managed secret storage before public deployment.
 - All bundled trial records are synthetic demonstration scenarios, not real trials, registry records, or validated research data. Their IDs and scientific details must not be cited.
 - LLM-generated outputs can be incomplete or incorrect. Every claim, number, endpoint, and outcome must be checked against the original trial source.
 - Hypotheses are exploratory suggestions, not established scientific conclusions.
@@ -120,7 +122,7 @@ See [Data provenance and research integrity](docs/data-provenance.md) and [Secur
 
 ## Roadmap
 
-1. Add a secure backend API and server-side credential management.
+1. Add authentication, per-user quotas, rate limiting, and request audit controls to the backend API.
 2. Ingest source records with stable identifiers and provenance.
 3. Add retrieval with source-level citations for every extracted claim.
 4. Define typed schemas and validate all model responses; the shared JSON-object parser now rejects malformed and non-object output.
