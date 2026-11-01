@@ -38,7 +38,7 @@ For dataQualityFlags: note any missing data, ambiguous results, or interpretatio
 Trial text:
 ${trial.content}`;
 
-      const raw = await callClaude(prompt, apiKey);
+      const raw = await callClaude(prompt);
       setResult(parseModelJson(raw));
     } catch (e) { setError(e.message); }
     setLoading(false);
