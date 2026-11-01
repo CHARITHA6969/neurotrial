@@ -2,13 +2,13 @@
 
 ## Current prototype
 
-Neurotrial is a browser-based research prototype. The current UI accepts an Anthropic API key in the browser and calls the provider directly from client-side JavaScript. The key is held in application memory and is not intentionally persisted by this code, but this is **not a production-safe secret-management design**.
+The React client now sends analysis prompts to a FastAPI service. The browser no longer accepts or stores an Anthropic API key. The backend reads `ANTHROPIC_API_KEY` from its runtime environment and calls the provider server-to-server.
 
-A key entered into a browser is exposed to that browser session and may be exposed through browser extensions, compromised devices, debugging tools, or malicious injected scripts. Never enter an organization-owned production key or use this flow with confidential research data.
+The API currently applies a prompt-size limit, provider timeout, generic provider-error handling, and a configurable CORS origin allowlist. This is a safer credential boundary, but it is not yet a complete production security design.
 
 ## Required production architecture
 
-Move provider calls behind an authenticated backend:
+Complete the backend security boundary before public deployment:
 
 1. Browser sends a narrowly scoped request to the application API.
 2. Backend authenticates the user and authorizes access to the requested dataset.
@@ -29,4 +29,4 @@ Model output is untrusted input. Parse and validate JSON, reject unknown or malf
 
 ## Current limitations
 
-The repository does not yet contain a backend proxy, authentication/authorization service, managed secret integration, durable audit log, or validated research-data governance controls. The documentation describes requirements, not implemented capabilities.
+The repository now contains a FastAPI proxy and environment-based provider credential handling. It does not yet contain authentication/authorization, per-user rate limits or quotas, a managed secret-store integration, durable audit logs, or validated research-data governance controls. The documentation distinguishes implemented safeguards from remaining requirements.
