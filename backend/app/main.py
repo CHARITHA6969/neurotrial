@@ -3,7 +3,7 @@ import os
 import httpx
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 app = FastAPI(
     title="Neurotrial API",
@@ -26,6 +26,7 @@ app.add_middleware(
 
 
 class AnalysisRequest(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
     prompt: str = Field(min_length=1, max_length=30000)
 
 
