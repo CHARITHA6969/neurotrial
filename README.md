@@ -21,6 +21,7 @@ Neurotrial is an exploration of how an LLM interface might help organize this wo
 - **Failure analysis:** explore factors associated with unsuccessful or terminated trials.
 - **Hypotheses:** develop possible explanations or research questions from the available information.
 - **Add trial:** add a trial record to the current in-memory session.
+- **Sources & RAG:** upload PDF/TXT/Markdown sources, persist extracted text chunks, ask questions over retrieved excerpts, and inspect returned citation metadata.
 - **Sample dataset:** load fictional demonstration scenarios from the local application data; these are not real clinical trials or source evidence.
 
 The interface is organized into reusable React components and separate analysis tabs. Model requests are routed through the backend rather than sent directly from the browser.
@@ -46,12 +47,14 @@ flowchart TD
     L --> K[Structured model response]
 ```
 
-This diagram describes the current prototype, not a production architecture. The React client now sends prompts to a FastAPI gateway. The gateway reads the Anthropic key from its server environment; it does not accept provider keys from the browser. The bundled records are synthetic scenarios and must not be cited as clinical evidence.
+This diagram describes the current prototype, not a production architecture. The React client sends prompts to a FastAPI gateway. The gateway reads the Anthropic key from its server environment; it does not accept provider keys from the browser. The source workspace stores document metadata and text chunks in a local SQL database, uses lexical retrieval as a transparent baseline, and asks the model to cite retrieved source labels. The bundled records are synthetic scenarios and must not be cited as clinical evidence.
 
 ## Technology
 
 - **Frontend:** React 18
-- **Backend:** Python, FastAPI, HTTPX
+- **Backend:** Python, FastAPI, HTTPX, SQLAlchemy
+- **Document processing:** pypdf, overlapping text chunks, SHA-256 document fingerprints
+- **Retrieval:** lexical term-overlap baseline with source/chunk citation metadata
 - **Provider security:** server-side environment secret, prompt-size validation, provider timeout, restricted CORS
 - **Language:** JavaScript / JSX
 - **LLM integration experiment:** Anthropic Messages API
@@ -125,12 +128,12 @@ Run API-helper tests:
 npm test -- --watchAll=false
 ```
 
-The frontend tests cover JSON parsing, malformed output, server-proxy request construction, and backend errors. Backend tests cover health, missing server credentials, and invalid/oversized prompts. Run backend tests from `backend/` with `PYTHONPATH=. pytest`.
+The frontend tests cover JSON parsing, malformed output, server-proxy request construction, and backend errors. Backend tests cover health, missing server credentials, invalid/oversized prompts, text upload, unsupported file types, retrieval, citations, and chunk normalization. Run backend tests from `backend/` with `PYTHONPATH=. pytest`.
 
 ## Important security and research limitations
 
 - **Do not use real patient data or confidential research data** with this prototype.
-- The backend proxy reads `ANTHROPIC_API_KEY` from its runtime environment. The current service still needs authentication, per-user quotas, rate limiting, audit controls, and managed secret storage before public deployment.
+- The backend proxy reads `ANTHROPIC_API_KEY` from its runtime environment. Document ingestion is currently a single-user development feature: authentication, per-user document isolation, quotas, rate limiting, audit controls, managed secret storage, and private object storage are required before public deployment.
 - All bundled trial records are synthetic demonstration scenarios, not real trials, registry records, or validated research data. Their IDs and scientific details must not be cited.
 - LLM-generated outputs can be incomplete or incorrect. Every claim, number, endpoint, and outcome must be checked against the original trial source.
 - Hypotheses are exploratory suggestions, not established scientific conclusions.
@@ -143,8 +146,8 @@ See [Data provenance and research integrity](docs/data-provenance.md) and [Secur
 ## Roadmap
 
 1. Add authentication, per-user quotas, rate limiting, and request audit controls to the backend API.
-2. Ingest source records with stable identifiers and provenance.
-3. Add retrieval with source-level citations for every extracted claim.
+2. Add semantic embedding retrieval, re-ranking, and source-level citations for every extracted claim.
+3. Add document ownership, authentication, authorization, upload malware scanning, and private storage.
 4. Define typed schemas and validate all model responses; the shared JSON-object parser now rejects malformed and non-object output.
 5. Build evaluation cases for extraction accuracy, comparison consistency, and unsupported claims.
 6. Add error handling, request tracing, tests, and CI.
