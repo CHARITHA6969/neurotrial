@@ -37,11 +37,13 @@ flowchart TD
     C --> G[Hypothesis exploration]
     C --> H[Add trial]
     C --> I[Bundled sample trial data]
-    D --> J[Claude API helper]
+    D --> J[React API client]
     E --> J
     F --> J
     G --> J
-    J --> K[Structured model response]
+    J --> L[FastAPI gateway]
+    L --> M[Server-side Anthropic key]
+    L --> K[Structured model response]
 ```
 
 This diagram describes the current prototype, not a production architecture. The React client now sends prompts to a FastAPI gateway. The gateway reads the Anthropic key from its server environment; it does not accept provider keys from the browser. The bundled records are synthetic scenarios and must not be cited as clinical evidence.
@@ -123,7 +125,7 @@ Run API-helper tests:
 npm test -- --watchAll=false
 ```
 
-The frontend tests cover JSON parsing, malformed output, server-proxy request construction, and backend errors. Backend tests cover health, missing server credentials, and invalid/oversized prompts.
+The frontend tests cover JSON parsing, malformed output, server-proxy request construction, and backend errors. Backend tests cover health, missing server credentials, and invalid/oversized prompts. Run backend tests from `backend/` with `PYTHONPATH=. pytest`.
 
 ## Important security and research limitations
 
