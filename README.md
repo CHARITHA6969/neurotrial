@@ -61,7 +61,12 @@ This diagram describes the current prototype, not a production architecture. The
 
 ```text
 neurotrial/
-├── backend/\n│   ├── app/main.py\n│   ├── tests/test_api.py\n│   ├── requirements.txt\n│   └── Dockerfile\n├── public/
+├── backend/
+│   ├── app/main.py
+│   ├── tests/test_api.py
+│   ├── requirements.txt
+│   └── Dockerfile
+├── public/
 ├── src/
 │   ├── api/
 │   │   └── claude.js
@@ -91,7 +96,20 @@ npm install
 npm start
 ```
 
-The development server starts at [http://localhost:3000](http://localhost:3000).\n\nStart the backend in a second terminal:\n\n```bash\ncd backend\npython -m venv .venv\n# Activate the environment, then install dependencies:\npip install -r requirements.txt\n# Configure ANTHROPIC_API_KEY in this server environment.\nuvicorn app.main:app --reload\n```\n\nSet `REACT_APP_API_URL` only if the backend is not at `http://localhost:8000`. The browser no longer receives or stores an Anthropic API key.
+The development server starts at [http://localhost:3000](http://localhost:3000).
+
+Start the backend in a second terminal:
+
+```bash
+cd backend
+python -m venv .venv
+# Activate the environment, then install dependencies:
+pip install -r requirements.txt
+# Configure ANTHROPIC_API_KEY in this server environment.
+uvicorn app.main:app --reload
+```
+
+Set `REACT_APP_API_URL` only if the backend is not at `http://localhost:8000`. The browser no longer receives or stores an Anthropic API key.
 
 Create a production build:
 
