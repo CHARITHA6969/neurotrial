@@ -1,5 +1,7 @@
 # Neurotrial
 
+[![CI](https://github.com/CHARITHA6969/neurotrial/actions/workflows/neurotrial-ci.yml/badge.svg)](https://github.com/CHARITHA6969/neurotrial/actions/workflows/neurotrial-ci.yml)
+
 **A React prototype for exploring LLM-assisted neuroscience clinical-trial intelligence.**
 
 Neurotrial explores a researcher-oriented workflow for inspecting clinical-trial records, comparing studies, identifying reported failure factors, and developing hypotheses for further investigation.
