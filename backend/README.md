@@ -1,6 +1,6 @@
 # Neurotrial API
 
-A server-side gateway for Anthropic analysis requests. The browser sends a prompt to this service; the Anthropic credential is read only from the server environment.
+FastAPI gateway for server-side Anthropic requests plus a local document-ingestion and retrieval pipeline.
 
 ## Run locally
 
@@ -12,8 +12,6 @@ pip install -r requirements.txt
 # Set ANTHROPIC_API_KEY in the server environment.
 uvicorn app.main:app --reload
 ```
-
-Set the key in your shell, not in React source or a browser field:
 
 PowerShell:
 ```powershell
@@ -27,12 +25,21 @@ export ANTHROPIC_API_KEY="your-key"
 uvicorn app.main:app --reload
 ```
 
-- Health: http://localhost:8000/health
-- OpenAPI: http://localhost:8000/docs
-- Analysis: POST /api/v1/analyze with JSON `{"prompt":"..."}`
+- Health: GET /health
+- API docs: http://localhost:8000/docs
+- Analyze: POST /api/v1/analyze
+- Upload a PDF/TXT/MD source: POST /api/v1/documents (multipart field: `file`)
+- List sources: GET /api/v1/documents
+- Ask over sources: POST /api/v1/ask with `{"question":"What was the primary endpoint?"}`
 
-## Security boundary
+## Retrieval behavior
 
-The API key never belongs in the frontend bundle. Configure it as a server environment secret. CORS is restricted to localhost by default and must be set to the deployed frontend origin. The endpoint limits prompt size and applies a provider timeout. Add authentication, per-user quotas, rate limiting, request audit controls, and deployment secret management before exposing it publicly.
+Uploads are limited to 8 MB and accepted only as PDF, UTF-8 text, or Markdown. PDF text is extracted with pypdf. Text is normalized and split into overlapping chunks; chunks and document metadata are persisted in the local SQL database. The current retrieval implementation ranks chunks by lexical term overlap and returns stable source/chunk identifiers. It is a transparent baseline, not semantic embedding search yet. Answers are prompted to cite retrieved source labels such as [S1]. The API returns citation metadata and excerpts alongside the answer.
 
-Do not submit patient-identifiable or confidential clinical data until the system has completed the required privacy, security, and organizational review. This prototype is not a validated clinical decision support system.
+Set `NEUROTRIAL_DATABASE_URL` to use a managed database. The default is a local SQLite file for development. Do not commit database files.
+
+## Security and research limitations
+
+The browser never receives the Anthropic key. Configure it only in the backend runtime environment. CORS is restricted to localhost by default. Authentication, per-user document isolation, quotas, rate limiting, virus scanning, and durable audit controls remain to be implemented before public deployment.
+
+Do not upload patient-identifiable or confidential clinical data until required privacy, security, and organizational reviews are complete. This prototype is not a validated clinical decision-support system.
