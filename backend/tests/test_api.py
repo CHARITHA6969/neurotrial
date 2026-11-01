@@ -80,7 +80,7 @@ def test_chunking_normalizes_whitespace():
 def test_ask_rejects_citations_that_do_not_map_to_retrieved_sources(monkeypatch):
     from app import main
 
-    monkeypatch.setattr(main, "_provider_text", lambda prompt: "Unsupported claim [S99].")
+    monkeypatch.setattr(main, "_provider_text", lambda prompt: "Unsupported claim [s99].")
     upload = client.post(
         "/api/v1/documents",
         files={
