@@ -1,5 +1,7 @@
+import math
 import os
 import re
+from collections import Counter
 from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, create_engine, select
@@ -49,7 +51,7 @@ def get_db():
 
 
 def split_into_chunks(text: str, size: int = 1200, overlap: int = 180) -> list[str]:
-    normalized = re.sub(r"\s+", " ", text).strip()
+    normalized = re.sub(r"\\s+", " ", text).strip()
     if not normalized:
         return []
     chunks = []
@@ -69,22 +71,112 @@ def split_into_chunks(text: str, size: int = 1200, overlap: int = 180) -> list[s
     return chunks
 
 
-def retrieve_chunks(db, question: str, document_ids: list[int] | None = None, limit: int = 5):
-    statement = select(DocumentChunk, SourceDocument).join(SourceDocument)
-    if document_ids:
-        statement = statement.where(SourceDocument.id.in_(document_ids))
-    rows = db.execute(statement).all()
-    terms = {term.lower() for term in re.findall(r"[a-zA-Z0-9]{3,}", question)}
-    scored = []
-    for chunk, document in rows:
-        words = re.findall(r"[a-zA-Z0-9]{3,}", chunk.text.lower())
-        score = sum(words.count(term) for term in terms)
-        if score:
-            scored.append((score, chunk, document))
-    scored.sort(key=lambda item: item[0], reverse=True)
+# A compact stop-word list keeps frequent grammatical words from dominating retrieval.
+_STOP_WORDS = {
+    "about", "after", "again", "against", "also", "are", "because", "been", "before",
+    "being", "between", "both", "but", "can", "could", "did", "does", "doing", "down",
+    "during", "each", "few", "for", "from", "further", "had", "has", "have", "having",
+    "her", "here", "hers", "him", "his", "how", "into", "its", "itself", "just", "more",
+    "most", "must", "not", "now", "off", "once", "only", "other", "our", "out", "over",
+    "same", "she", "should", "some", "such", "than", "that", "their", "theirs", "them",
+    "then", "there", "these", "they", "this", "those", "through", "too", "under", "until",
+    "very", "was", "were", "what", "when", "where", "which", "while", "who", "whom",
+    "why", "will", "with", "would", "you", "your",
+}
+_TOKEN_PATTERN = re.compile(r"[a-zA-Z0-9]{3,}")
+
+
+def _tokenize(text: str) -> list[str]:
     return [
-        {"citation_id": f"S{index + 1}", "document_id": document.id,
-         "filename": document.filename, "chunk_id": chunk.id, "text": chunk.text,
-         "score": score}
+        token.lower()
+        for token in _TOKEN_PATTERN.findall(text)
+        if token.lower() not in _STOP_WORDS
+    ]
+
+
+def retrieve_chunks(
+    db,
+    question: str,
+    document_ids: list[int] | None = None,
+    limit: int = 5,
+):
+    """Rank chunks with a small BM25-style lexical retriever.
+
+    This is a transparent local baseline, not a semantic embedding search engine.
+    """
+    if limit <= 0:
+        return []
+
+    query_terms = set(_tokenize(question))
+    if not query_terms:
+        return []
+
+    statement = select(DocumentChunk, SourceDocument).join(SourceDocument)
+    if document_ids is not None:
+        if not document_ids:
+            return []
+        statement = statement.where(SourceDocument.id.in_(document_ids))
+
+    rows = db.execute(statement).all()
+    if not rows:
+        return []
+
+    tokenized_rows = []
+    document_frequency: Counter[str] = Counter()
+    total_length = 0
+
+    for chunk, document in rows:
+        tokens = _tokenize(chunk.text)
+        frequencies = Counter(tokens)
+        tokenized_rows.append((chunk, document, frequencies, len(tokens)))
+        document_frequency.update(set(frequencies))
+        total_length += len(tokens)
+
+    corpus_size = len(tokenized_rows)
+    average_length = total_length / corpus_size if corpus_size else 0
+    if average_length <= 0:
+        return []
+
+    # Standard BM25 tuning defaults; kept fixed for reproducible baseline behaviour.
+    k1 = 1.5
+    b = 0.75
+    scored = []
+
+    for chunk, document, frequencies, document_length in tokenized_rows:
+        score = 0.0
+        for term in query_terms:
+            term_frequency = frequencies.get(term, 0)
+            if not term_frequency:
+                continue
+            doc_frequency = document_frequency[term]
+            inverse_document_frequency = math.log(
+                1 + (corpus_size - doc_frequency + 0.5) / (doc_frequency + 0.5)
+            )
+            denominator = term_frequency + k1 * (
+                1 - b + b * document_length / average_length
+            )
+            score += inverse_document_frequency * (
+                term_frequency * (k1 + 1) / denominator
+            )
+
+        if score > 0:
+            scored.append((score, chunk, document))
+
+    scored.sort(
+        key=lambda item: (
+            -item[0],
+            item[1].document_id,
+            item[1].chunk_index,
+        )
+    )
+    return [
+        {
+            "citation_id": f"S{index + 1}",
+            "document_id": document.id,
+            "filename": document.filename,
+            "chunk_id": chunk.id,
+            "text": chunk.text,
+            "score": score,
+        }
         for index, (score, chunk, document) in enumerate(scored[:limit])
     ]
