@@ -41,7 +41,9 @@ app.add_middleware(
 )
 
 # Local prototype persistence. Use a managed database and migrations before production.
-Base.metadata.create_all(bind=engine)
+@app.on_event("startup")
+def initialize_database() -> None:
+    Base.metadata.create_all(bind=engine)
 
 
 class AnalysisRequest(BaseModel):
