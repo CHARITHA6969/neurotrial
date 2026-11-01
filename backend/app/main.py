@@ -224,7 +224,7 @@ def ask_sources(payload: AskRequest, db: Session = Depends(get_db)):
     )
     answer = _provider_text(prompt)
     available_citations = {item["citation_id"] for item in matches}
-    referenced_citations = set(re.findall(r"\\[(S\\d+)\\]", answer))
+    referenced_citations = set(re.findall(r"\[(S\d+)\]", answer))
     unknown_citations = referenced_citations - available_citations
     if unknown_citations:
         raise HTTPException(
