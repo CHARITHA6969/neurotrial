@@ -78,7 +78,6 @@ def retrieve_chunks(db, question: str, document_ids: list[int] | None = None, li
     scored = []
     for chunk, document in rows:
         words = re.findall(r"[a-zA-Z0-9]{3,}", chunk.text.lower())
-        word_set = set(words)
         score = sum(words.count(term) for term in terms)
         if score:
             scored.append((score, chunk, document))
