@@ -6,7 +6,7 @@
 
 Neurotrial explores a researcher-oriented workflow for inspecting clinical-trial records, comparing studies, identifying reported failure factors, and developing hypotheses for further investigation.
 
-> **Project status:** Frontend prototype / experimental integration. The current app uses explicitly synthetic demonstration records and a direct browser-to-Anthropic API call behind an API-key gate. It is not a validated clinical research tool and must not be used to make medical, treatment, or investment decisions.
+> **Project status:** Full-stack prototype with a React interface and a FastAPI analysis gateway. It uses explicitly synthetic demonstration records and is not a validated clinical research tool; it must not be used to make medical, treatment, or investment decisions.
 
 ## Problem space
 
@@ -23,7 +23,7 @@ Neurotrial is an exploration of how an LLM interface might help organize this wo
 - **Add trial:** add a trial record to the current in-memory session.
 - **Sample dataset:** load fictional demonstration scenarios from the local application data; these are not real clinical trials or source evidence.
 
-The interface is organized into reusable React components and separate analysis tabs.
+The interface is organized into reusable React components and separate analysis tabs. Model requests are routed through the backend rather than sent directly from the browser.
 
 ## Architecture today
 
