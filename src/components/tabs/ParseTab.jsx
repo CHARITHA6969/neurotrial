@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { C, styles } from "../../styles/tokens";
-import { callClaude } from "../../api/claude";
+import { callClaude, parseModelJson } from "../../api/claude";
 import Section from "../Section";
 import Spinner from "../Spinner";
 import StatusPill from "../StatusPill";
@@ -39,8 +39,7 @@ Trial text:
 ${trial.content}`;
 
       const raw = await callClaude(prompt, apiKey);
-      const clean = raw.replace(/```json|```/g, "").trim();
-      setResult(JSON.parse(clean));
+      setResult(parseModelJson(raw));
     } catch (e) { setError(e.message); }
     setLoading(false);
   };
