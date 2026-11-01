@@ -10,6 +10,30 @@ CRITICAL RULES:
 
 You respond only with valid JSON matching the schema requested. No markdown backticks, no preamble.`;
 
+export function parseModelJson(raw) {
+  if (typeof raw !== "string" || !raw.trim()) {
+    throw new Error("The model returned an empty response.");
+  }
+
+  const clean = raw
+    .trim()
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/, "")
+    .trim();
+
+  let parsed;
+  try {
+    parsed = JSON.parse(clean);
+  } catch {
+    throw new Error("The model response was not valid JSON. Retry the request or inspect the raw response.");
+  }
+
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new Error("The model response must be a JSON object.");
+  }
+  return parsed;
+}
+
 export async function callClaude(userPrompt, apiKey) {
   if (typeof userPrompt !== "string" || !userPrompt.trim()) {
     throw new Error("A non-empty analysis prompt is required.");
@@ -34,7 +58,6 @@ export async function callClaude(userPrompt, apiKey) {
     }),
   });
 
-  // Read the response body once and handle non-JSON provider/proxy errors safely.
   const rawBody = await response.text();
   let data = null;
   try {
@@ -48,7 +71,10 @@ export async function callClaude(userPrompt, apiKey) {
   }
 
   const text = Array.isArray(data?.content)
-    ? data.content.filter((block) => block?.type === "text").map((block) => block.text).join("")
+    ? data.content
+        .filter((block) => block?.type === "text" && typeof block.text === "string")
+        .map((block) => block.text)
+        .join("")
     : "";
 
   if (!text.trim()) {
