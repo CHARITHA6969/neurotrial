@@ -19,8 +19,9 @@ describe("callClaude server proxy", () => {
   afterEach(() => jest.restoreAllMocks());
 
   test("rejects empty prompts without making a request", async () => {
+    global.fetch = jest.fn();
     await expect(callClaude(" ")).rejects.toThrow(/prompt is required/);
-    expect(global.fetch).toBeUndefined();
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 
   test("sends prompt to the backend without a browser API key", async () => {
