@@ -31,9 +31,7 @@ app.add_middleware(
 )
 
 
-@app.on_event("startup")
-def initialize_database():
-    Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 
 class AnalysisRequest(BaseModel):
@@ -118,7 +116,7 @@ def analyze(payload: AnalysisRequest):
 
 @app.post("/api/v1/documents", tags=["documents"])
 async def upload_document(file: UploadFile = File(...), db: Session = Depends(get_db)):
-    filename = (file.filename or "uploaded-document").replace("\\\\", "/").split("/")[-1][:255]
+    filename = (file.filename or "uploaded-document").replace("\\", "/").split("/")[-1][:255]
     extension = filename.lower().rsplit(".", 1)[-1] if "." in filename else ""
     if extension not in {"pdf", "txt", "md"}:
         raise HTTPException(status_code=415, detail="Only PDF, TXT, and Markdown documents are supported.")
