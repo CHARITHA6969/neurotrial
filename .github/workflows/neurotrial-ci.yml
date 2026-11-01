@@ -56,3 +56,22 @@ jobs:
       - run: PYTHONPATH=. pytest
       - name: Build backend container image
         run: docker build -t neurotrial-api:ci .
+
+      - name: Start full Docker Compose stack
+        run: docker compose -f ../docker-compose.yml up -d --build
+
+      - name: Smoke test frontend and API through the local stack
+        run: |
+          for attempt in $(seq 1 45); do
+            if curl -fsS http://localhost:8000/health >/dev/null && curl -fsS http://localhost:3000/ >/dev/null; then
+              echo "Frontend and API are responding."
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f ../docker-compose.yml logs
+          exit 1
+
+      - name: Stop Docker Compose stack
+        if: always()
+        run: docker compose -f ../docker-compose.yml down -v
