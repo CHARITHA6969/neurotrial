@@ -49,6 +49,7 @@ This diagram describes the current prototype, not a production architecture. The
 - **Frontend:** React 18
 - **Language:** JavaScript / JSX
 - **LLM integration experiment:** Anthropic Messages API
+- **Automated tests:** Jest via Create React App (response parsing and provider error handling)
 - **Data:** local sample trial records
 - **UI structure:** reusable components, tab-based workflows, shared style tokens
 
@@ -94,6 +95,14 @@ Create a production build:
 npm run build
 ```
 
+Run API-helper tests:
+
+```bash
+npm test -- --watchAll=false
+```
+
+The tests cover JSON object parsing (including fenced output), malformed model responses, missing request inputs, provider errors, and text-block extraction.
+
 ## Important security and research limitations
 
 - **Do not use real patient data or confidential research data** with this prototype.
@@ -112,7 +121,7 @@ See [Data provenance and research integrity](docs/data-provenance.md) and [Secur
 1. Add a secure backend API and server-side credential management.
 2. Ingest source records with stable identifiers and provenance.
 3. Add retrieval with source-level citations for every extracted claim.
-4. Define typed schemas and validate all model responses.
+4. Define typed schemas and validate all model responses; the shared JSON-object parser now rejects malformed and non-object output.
 5. Build evaluation cases for extraction accuracy, comparison consistency, and unsupported claims.
 6. Add error handling, request tracing, tests, and CI.
 7. Add human review and exportable research notes with links to source records.
