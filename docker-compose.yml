@@ -1,0 +1,34 @@
+services:
+  api:
+    build:
+      context: ./backend
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-sonnet-5-5}
+      CORS_ORIGINS: http://localhost:3000
+      NEUROTRIAL_DATABASE_URL: sqlite:////data/neurotrial.db
+    volumes:
+      - neurotrial_data:/data
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      args:
+        REACT_APP_API_URL: ""
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
+volumes:
+  neurotrial_data:
