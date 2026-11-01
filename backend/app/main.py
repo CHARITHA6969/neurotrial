@@ -93,7 +93,7 @@ def _provider_text(prompt: str) -> str:
         raise HTTPException(status_code=502, detail="The AI provider rejected the analysis request.")
     try:
         data = response.json()
-        text = "".join(
+            text = "\n".join(page.extract_text() or "" for page in reader.pages)
             block.get("text", "") for block in data.get("content", [])
             if block.get("type") == "text" and isinstance(block.get("text"), str)
         )
@@ -131,12 +131,12 @@ async def upload_document(file: UploadFile = File(...), db: Session = Depends(ge
         try:
             from io import BytesIO
             reader = PdfReader(BytesIO(raw))
-            text = "\\n".join(page.extract_text() or "" for page in reader.pages)
+            text = "\n".join(page.extract_text() or "" for page in reader.pages)
         except Exception as exc:
             raise HTTPException(status_code=422, detail="The PDF could not be parsed.") from exc
     else:
         try:
-            text = raw.decode("utf-8")
+            text = "\n".join(page.extract_text() or "" for page in reader.pages)
         except UnicodeDecodeError as exc:
             raise HTTPException(status_code=422, detail="Text documents must use UTF-8 encoding.") from exc
     chunks = split_into_chunks(text)
@@ -165,11 +165,11 @@ def ask_sources(payload: AskRequest, db: Session = Depends(get_db)):
     matches = retrieve_chunks(db, payload.question, payload.document_ids or None)
     if not matches:
         raise HTTPException(status_code=404, detail="No relevant source excerpts found. Upload documents or broaden your question.")
-    source_context = "\\n\\n".join(
-        f"[{item['citation_id']}] Source: {item['filename']} (document {item['document_id']}, chunk {item['chunk_id']})\\n{item['text']}"
+            text = "\n".join(page.extract_text() or "" for page in reader.pages)
+        f"[{item['citation_id']}] Source: {item['filename']} (document {item['document_id']}, chunk {item['chunk_id']})\n{item['text']}"
         for item in matches
     )
-    prompt = f"Question: {payload.question}\\n\\nRetrieved source excerpts:\\n{source_context}\\n\\nAnswer with inline citations [S1], [S2], etc. Do not use outside knowledge."
+    prompt = f"Question: {payload.question}\n\nRetrieved source excerpts:\n{source_context}\n\nAnswer with inline citations [S1], [S2], etc. Do not use outside knowledge."
     answer = _provider_text(prompt)
     citations = [
         Citation(citation_id=item["citation_id"], document_id=item["document_id"],
