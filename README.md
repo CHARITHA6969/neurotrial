@@ -63,6 +63,21 @@ SQLAlchemy store
 
 ## Run locally
 
+### Run the full application with Docker Compose
+
+Requirements: Docker Desktop or Docker Engine with the Compose plugin.
+
+```bash
+docker compose up --build
+```
+
+Open the frontend at [http://localhost:3000](http://localhost:3000), API docs at [http://localhost:8000/docs](http://localhost:8000/docs), and health at [http://localhost:8000/health](http://localhost:8000/health).
+
+The API starts without a provider key so you can inspect the synthetic trial workspace and upload documents. AI analysis endpoints return a clear configuration error until `ANTHROPIC_API_KEY` is supplied to Compose. For example, set it in your shell before starting Compose; never place it in the React app or commit it. The SQLite database is persisted in the `neurotrial_data` volume.
+
+Stop services with `docker compose down`. Add `-v` only when you intentionally want to delete the local source-document database.
+
+
 ### 1. Start the backend
 
 ```bash
